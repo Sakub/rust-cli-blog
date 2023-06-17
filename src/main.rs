@@ -150,9 +150,7 @@ fn menu(user: &mut User, posts_store: &mut PostsStore) {
                             posts_store.posts.last().unwrap().id
                         )
                     }
-                    Err(e) => {
-                        println!("Error while creating post: {}", e)
-                    }
+                    Err(error) => handle_input_error(&error),
                 }
             }
             MenuChoices::DISPLAY_ALL_POSTS => {
