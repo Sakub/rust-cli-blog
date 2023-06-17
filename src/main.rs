@@ -47,7 +47,7 @@ impl PostsStore {
     }
 
     fn new() -> PostsStore {
-        return PostsStore { posts: vec![] };
+        PostsStore { posts: vec![] }
     }
 }
 
