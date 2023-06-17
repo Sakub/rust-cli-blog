@@ -34,9 +34,9 @@ struct PostsStore {
 }
 
 impl PostsStore {
-    fn create_post(&mut self, post_title: &String) -> () {
+    fn create_post(&mut self, post_title: &str) {
         let title = String::from(post_title);
-        if title.trim().len() > 0 {
+        if !title.trim().is_empty() {
             let post = Post {
                 author_id: 1,
                 title,
@@ -64,16 +64,16 @@ struct User {
 }
 
 impl User {
-    fn change_firstname(&mut self, new_name: &String) -> () {
+    fn change_firstname(&mut self, new_name: &str) {
         let name = String::from(new_name);
-        if name.trim().len() > 0 {
+        if !name.trim().is_empty() {
             self.firstname = name
         }
     }
 
-    fn change_lastname(&mut self, new_name: &String) -> () {
+    fn change_lastname(&mut self, new_name: &str) {
         let name = String::from(new_name);
-        if name.trim().len() > 0 {
+        if !name.trim().is_empty() {
             self.lastname = name
         }
     }
@@ -84,7 +84,7 @@ impl User {
 }
 
 fn handle_input_error(error: &std::io::Error) {
-    println!("Error while providing input: {}", error);
+    eprintln!("Error while providing input: {}", error);
     exit(1)
 }
 
@@ -105,13 +105,12 @@ fn menu(user: &mut User, posts_store: &mut PostsStore) {
     println!("|   [9] Exit                   |");
     println!("-------------------------------");
 
-    match std::io::stdin().read_line(&mut menuInput) {
-        Err(error) => println!("Error: {error}"),
-        Ok(_) => {}
+    if let Err(error) = std::io::stdin().read_line(&mut menuInput) {
+        eprintln!("Error: {error}")
     }
 
     match menuInput.trim().parse::<i32>() {
-        Err(error) => println!("Error while parsing string to number: {error}"),
+        Err(error) => eprintln!("Error while parsing string to number: {error}"),
         Ok(value) => match MenuChoices::from_value(value) {
             MenuChoices::GET_FIRSTNAME => println!("Your firstname: {}", user.firstname),
             MenuChoices::GET_LASTNAME => println!("Your lastname: {}", user.lastname),
@@ -175,25 +174,25 @@ fn main() {
     let mut lastname = String::new();
     let mut ageInput = String::new();
     let mut age: i32 = 0;
+
     println!("Hi, before we start, provide me your firstname:");
-    match std::io::stdin().read_line(&mut firstname) {
-        Err(error) => handle_input_error(&error),
-        _ => {}
-    };
-    println!("Now, provide your lastname:");
-    match std::io::stdin().read_line(&mut lastname) {
-        Err(error) => handle_input_error(&error),
-        _ => {}
+    if let Err(error) = std::io::stdin().read_line(&mut firstname) {
+        handle_input_error(&error)
     }
+
+    println!("Now, provide your lastname:");
+    if let Err(error) = std::io::stdin().read_line(&mut lastname) {
+        handle_input_error(&error)
+    }
+
     println!("Okay, now lastly provide your age:");
-    match std::io::stdin().read_line(&mut ageInput) {
-        Err(error) => handle_input_error(&error),
-        _ => {}
+    if let Err(error) = std::io::stdin().read_line(&mut ageInput) {
+        handle_input_error(&error)
     }
 
     match ageInput.trim().parse::<i32>() {
         Ok(n) => age = n,
-        Err(error) => println!("Error while parsing {}error message: {}", ageInput, error),
+        Err(error) => eprintln!("Error while parsing {}error message: {}", ageInput, error),
     }
 
     let mut user = User {
