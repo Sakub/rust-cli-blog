@@ -1,3 +1,7 @@
+mod models;
+use crate::models::PostsStore;
+use crate::models::User;
+
 use std::process::exit;
 
 enum MenuChoices {
@@ -26,60 +30,6 @@ impl MenuChoices {
             9 => MenuChoices::EXIT,
             _ => panic!("Index out of available options"),
         }
-    }
-}
-
-struct PostsStore {
-    posts: Vec<Post>,
-}
-
-impl PostsStore {
-    fn create_post(&mut self, post_title: &str) {
-        let title = String::from(post_title);
-        if !title.trim().is_empty() {
-            let post = Post {
-                author_id: 1,
-                title,
-                id: self.posts.len() as i32,
-            };
-            self.posts.push(post);
-        }
-    }
-
-    fn new() -> PostsStore {
-        PostsStore { posts: vec![] }
-    }
-}
-
-struct Post {
-    id: i32,
-    title: String,
-    author_id: i32,
-}
-
-struct User {
-    firstname: String,
-    lastname: String,
-    age: i32,
-}
-
-impl User {
-    fn change_firstname(&mut self, new_name: &str) {
-        let name = String::from(new_name);
-        if !name.trim().is_empty() {
-            self.firstname = name
-        }
-    }
-
-    fn change_lastname(&mut self, new_name: &str) {
-        let name = String::from(new_name);
-        if !name.trim().is_empty() {
-            self.lastname = name
-        }
-    }
-
-    fn is_legal(&self) -> bool {
-        self.age >= 18
     }
 }
 
