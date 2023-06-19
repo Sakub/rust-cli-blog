@@ -3,7 +3,7 @@ use crate::models::PostsStore;
 use crate::models::User;
 
 use std::process::exit;
-
+use uuid::Uuid;
 enum MenuChoices {
     GET_FIRSTNAME = 0,
     GET_LASTNAME = 1,
@@ -47,7 +47,7 @@ fn menu(user: &mut User, posts_store: &mut PostsStore) {
     println!("|   [0] Show your firstname    |");
     println!("|   [1] Show your lastname     |");
     println!("|   [2] Show your age          |");
-    println!("|   [3] Check if u're legal    |");
+    println!("|   [3] Check if you're legal  |");
     println!("|   [4] Change firstname       |");
     println!("|   [5] Change lastname        |");
     println!("|   [6] Create post            |");
@@ -93,7 +93,7 @@ fn menu(user: &mut User, posts_store: &mut PostsStore) {
                 println!("Provide post title:");
                 match std::io::stdin().read_line(&mut post_name) {
                     Ok(_) => {
-                        posts_store.create_post(&post_name);
+                        posts_store.create_post(&user, &post_name);
                         println!(
                             "Successfully created post with id: {:?}",
                             posts_store.posts.last().unwrap().id
@@ -106,8 +106,8 @@ fn menu(user: &mut User, posts_store: &mut PostsStore) {
                 if posts_store.posts.is_empty() {
                     println!("No posts have been made yet")
                 } else {
-                    for post in &posts_store.posts {
-                        println!("{}. {}", post.id, post.title)
+                    for (index, post) in posts_store.posts.iter().enumerate() {
+                        println!("{}. {}", index, post.title)
                     }
                 }
             }
@@ -149,6 +149,7 @@ fn main() {
         firstname,
         lastname,
         age,
+        id: Uuid::new_v4(),
     };
 
     println!("Successfully created user!");

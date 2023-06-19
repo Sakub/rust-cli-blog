@@ -19,6 +19,6 @@
 
 ### To Do:
 1. ~~Move structs and their method implementations to separate file~~,
-2. Generate random UUID for users and posts
-3. Assign user UUID as post's author ID
+2. ~~Generate random UUID for users and posts~~
+3. ~~Assign user UUID as post's author ID~~
 4. Add availability to retrieve post by its ID
