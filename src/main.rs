@@ -1,4 +1,5 @@
 mod models;
+
 use crate::models::PostsStore;
 use crate::models::User;
 
@@ -13,12 +14,13 @@ enum MenuChoices {
     CHANGE_LASTNAME = 5,
     CREATE_POST = 6,
     DISPLAY_ALL_POSTS = 7,
+    GET_POST = 8,
     EXIT = 9,
 }
 
 impl MenuChoices {
-    fn from_value(menuEntry: i32) -> MenuChoices {
-        match menuEntry {
+    fn from_value(menu_entry: i32) -> MenuChoices {
+        match menu_entry {
             0 => MenuChoices::GET_FIRSTNAME,
             1 => MenuChoices::GET_LASTNAME,
             2 => MenuChoices::GET_AGE,
@@ -27,6 +29,7 @@ impl MenuChoices {
             5 => MenuChoices::CHANGE_LASTNAME,
             6 => MenuChoices::CREATE_POST,
             7 => MenuChoices::DISPLAY_ALL_POSTS,
+            8 => MenuChoices::GET_POST,
             9 => MenuChoices::EXIT,
             _ => panic!("Index out of available options"),
         }
@@ -39,7 +42,7 @@ fn handle_input_error(error: &std::io::Error) {
 }
 
 fn menu(user: &mut User, posts_store: &mut PostsStore) {
-    let mut menuInput = String::new();
+    let mut menu_input = String::new();
 
     println!("________________________________");
     println!("|  What do you want to do now? |");
@@ -52,14 +55,15 @@ fn menu(user: &mut User, posts_store: &mut PostsStore) {
     println!("|   [5] Change lastname        |");
     println!("|   [6] Create post            |");
     println!("|   [7] Display all posts      |");
+    println!("|   [8] Get single post        |");
     println!("|   [9] Exit                   |");
     println!("-------------------------------");
 
-    if let Err(error) = std::io::stdin().read_line(&mut menuInput) {
+    if let Err(error) = std::io::stdin().read_line(&mut menu_input) {
         eprintln!("Error: {error}")
     }
 
-    match menuInput.trim().parse::<i32>() {
+    match menu_input.trim().parse::<i32>() {
         Err(error) => eprintln!("Error while parsing string to number: {error}"),
         Ok(value) => match MenuChoices::from_value(value) {
             MenuChoices::GET_FIRSTNAME => println!("Your firstname: {}", user.firstname),
@@ -111,6 +115,34 @@ fn menu(user: &mut User, posts_store: &mut PostsStore) {
                     }
                 }
             }
+            MenuChoices::GET_POST => {
+                if posts_store.posts.is_empty() {
+                    println!("No posts have been made yet")
+                } else {
+                    for (index, post) in posts_store.posts.iter().enumerate() {
+                        println!("{}. {}", index, post.title)
+                    }
+                    println!("Select post to retrieve by its index:");
+                    let mut input = String::new();
+                    match std::io::stdin().read_line(&mut input) {
+                        Ok(_) => {
+                            if let Ok(post_index) = input.trim().parse::<usize>() {
+                                match posts_store.posts.get(post_index) {
+                                    Some(post) => {
+                                        println!("Post ID: {}", post.id);
+                                        println!("Post Title: {}", post.title);
+                                        println!("Post author ID: {}", post.author_id);
+                                    }
+                                    None => {
+                                        println!("Invalid entry")
+                                    }
+                                }
+                            }
+                        }
+                        Err(error) => handle_input_error(&error),
+                    }
+                }
+            }
             MenuChoices::EXIT => {
                 print!("Goodbye, {}!", user.firstname);
                 exit(0);
@@ -122,7 +154,7 @@ fn menu(user: &mut User, posts_store: &mut PostsStore) {
 fn main() {
     let mut firstname = String::new();
     let mut lastname = String::new();
-    let mut ageInput = String::new();
+    let mut age_input = String::new();
     let mut age: i32 = 0;
 
     println!("Hi, before we start, provide me your firstname:");
@@ -136,13 +168,13 @@ fn main() {
     }
 
     println!("Okay, now lastly provide your age:");
-    if let Err(error) = std::io::stdin().read_line(&mut ageInput) {
+    if let Err(error) = std::io::stdin().read_line(&mut age_input) {
         handle_input_error(&error)
     }
 
-    match ageInput.trim().parse::<i32>() {
+    match age_input.trim().parse::<i32>() {
         Ok(n) => age = n,
-        Err(error) => eprintln!("Error while parsing {}error message: {}", ageInput, error),
+        Err(error) => eprintln!("Error while parsing {}error message: {}", age_input, error),
     }
 
     let mut user = User {
